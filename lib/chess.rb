@@ -20,6 +20,7 @@ end
 class Game
     attr_accessor :board
     attr_reader :player_1, :player_2
+
     def initialize() 
         @board = Array.new(8).map() {|i| i = Array.new(8)}
         puts "Player 1: "
@@ -27,6 +28,34 @@ class Game
         puts "Player 2: "
         @player_2 = Player.new()
         @curr_turn = player_1
+    end
+
+    def move_piece(start, destination) 
+
+        board[destination[0]][destination[1]] = board[start[0]][start[1]]
+        board[start[0]][start[1]] = nil
+        board[destination[0]][destination[1]].position = destination
+        
+    end
+
+    def ask_input()
+        print "Enter row [0-7]: "
+        row = gets.chomp
+        print "Enter column [0-7]: "
+        column = gets.chomp
+
+        return [row, column]
+    end
+
+    def valid_input(input) 
+        until input[0].match?(/^[0-7]$/) && input[1].match?(/^[0-7]$/) do
+            puts "Invalid Row or Column, try again."
+            input = ask_input()
+
+        end
+        input[0] = input[0].to_i
+        input[1] = input[1].to_i
+        return input
     end
 
     def populate_player_piece(player)
@@ -60,7 +89,8 @@ class Game
 end
 
 class Piece
-    attr_reader :position, :type, :owner
+    attr_reader :type, :owner
+    attr_accessor :position
     def initialize(position, type, owner) 
         @position = position
         @type = type
@@ -72,4 +102,9 @@ end
 game = Game.new()
 game.populate_player_piece(game.player_1)
 game.populate_player_piece(game.player_2)
+game.move_piece(game.valid_input(game.ask_input()), game.valid_input(game.ask_input()))
+#game.ask_input()
+game.valid_input(['-5', '2'])
+
 puts game.display_board
+
