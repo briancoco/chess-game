@@ -64,10 +64,11 @@ class Game
         else
             rows = [7, 6]
         end
-        pieces = ['Rook', 'Knight', 'Bishop', 'Queen', 'King', 'Bishop', 'Knight', 'Rook']
+        pieces = [Rook.new([rows[0], 0], player), Piece.new([rows[0], 1], player), Piece.new([rows[0], 2], player), Piece.new([rows[0], 3], player), Piece.new([rows[0], 4], player), Piece.new([rows[0], 5], player), Piece.new([rows[0], 6], player), Rook.new([rows[0], 7], player)]
+        
         8.times do |index|
-            board[rows[1]][index] = Piece.new([1, index], 'Pawn', player)
-            board[rows[0]][index] = Piece.new([0, index], pieces[index], player)
+            board[rows[1]][index] = Piece.new([rows[1], index], player)
+            board[rows[0]][index] = pieces[index]
         end
     end
 
@@ -79,7 +80,7 @@ class Game
                 if piece == nil 
                     display += "  |"
                 else 
-                    display += "#{piece.owner.symbol}#{piece.type[0]}|"
+                    display += "#{piece.owner.symbol}#{piece.symbol}|"
                 end
             end
             display += "\n"
@@ -89,20 +90,25 @@ class Game
 end
 
 class Piece
-    attr_reader :type, :owner
-    attr_accessor :position
-    def initialize(position, type, owner) 
+    attr_reader :owner, :symbol
+    attr_accessor :position, :moves
+    def initialize(position, owner, symbol = 'P') 
         @position = position
-        @type = type
         @owner = owner
+        @symbol = symbol
         @moves = []
     end
+
 end
 
-class Rook 
+class Rook < Piece
+    
     #create possible_moves() instance method which returns the possible moves in a 2d array depending on current piece position
     #game will use this to determine of the move abides by the game rules
     #a rook can move horizontally and vertically, cannot jump pieces, front/backwards
+    def initialize(position, owner, symbol = 'S')
+        super
+    end
     def possible_moves(position, board)
         moves = []
         
@@ -183,9 +189,6 @@ puts game.display_board
 game = Game.new()
 game.populate_player_piece(game.player_1)
 game.populate_player_piece(game.player_2)
-game.move_piece([7, 0], [5, 3])
-game.move_piece([6, 0], [5, 1])
-rook = Rook.new
-moves = rook.possible_moves([5, 3], game.board)
-puts game.display_board
-p moves
+
+puts game.display_board()
+p game.board[7][0]
