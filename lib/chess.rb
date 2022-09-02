@@ -31,7 +31,7 @@ class Game
     end
 
     def move_piece(start, destination) 
-
+        #valid_move() func will check if the piece is of the players as well as if destination is a possible move
         board[destination[0]][destination[1]] = board[start[0]][start[1]]
         board[start[0]][start[1]] = nil
         board[destination[0]][destination[1]].position = destination
@@ -99,6 +99,77 @@ class Piece
     end
 end
 
+class Rook 
+    #create possible_moves() instance method which returns the possible moves in a 2d array depending on current piece position
+    #game will use this to determine of the move abides by the game rules
+    #a rook can move horizontally and vertically, cannot jump pieces, front/backwards
+    def possible_moves(position, board)
+        moves = []
+        
+        moves += horizontal_moves(position, board)
+        moves += vertical_moves(position, board)
+
+        moves
+    end
+
+    def horizontal_moves(position, board)
+        moves = []
+        #grab current position
+        row = position[0]
+        column = position[1]
+        #iterate through row grabbing horizontal pos that aren't occupied + ending if enemy piece
+        front = column + 1
+        back = column - 1
+        until (front > 7 || board[row][front] != nil) && (back < 0 || board[row][back] != nil) do
+            if front <= 7 && board[row][front].nil?
+                moves << [row, front]
+                front += 1
+            end
+            if back >= 0 && board[row][back].nil?
+                moves << [row, back]
+                back -= 1
+            end
+        end
+        if front <= 7
+            moves << [row, front]
+        end
+        if back >= 0
+            moves << [row, back]
+        end
+
+        moves
+    end
+
+    def vertical_moves(position, board)
+        moves = []
+        #grab current position
+        row = position[0]
+        column = position[1]
+        front = row - 1
+        back = row + 1
+
+        until (front < 0 || board[front][column] != nil) && (back > 7 || board[back][column] != nil) do
+            if front >= 0 && board[front][column].nil?
+                moves << [front, column]
+                front -= 1
+            end
+            if back <= 7 && board[back][column].nil?
+                moves << [back, column]
+                back += 1
+            end
+        end
+
+        if front >= 0
+            moves << [front, column]
+        end
+        if back <= 7
+            moves << [back, column]
+        end
+
+        moves
+    end
+end
+=begin
 game = Game.new()
 game.populate_player_piece(game.player_1)
 game.populate_player_piece(game.player_2)
@@ -107,4 +178,14 @@ game.move_piece(game.valid_input(game.ask_input()), game.valid_input(game.ask_in
 game.valid_input(['-5', '2'])
 
 puts game.display_board
+=end
 
+game = Game.new()
+game.populate_player_piece(game.player_1)
+game.populate_player_piece(game.player_2)
+game.move_piece([7, 0], [5, 3])
+game.move_piece([6, 0], [5, 1])
+rook = Rook.new
+moves = rook.possible_moves([5, 3], game.board)
+puts game.display_board
+p moves
